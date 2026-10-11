@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net: default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Menu Items: Publicly readable, write-restricted to staff/admin
+    match /menuItems/{itemId} {
+      allow get, list: if true;
+      allow create, update, delete: if isSignedIn();
+    }
+
+    // Orders: Readable and creatable by customers and roastery staff
+    match /orders/{orderId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if isValidId(orderId) &&
+        request.resource.data.totalInPaise is int &&
+        request.resource.data.budgetLimitInPaise is int &&
+        request.resource.data.totalInPaise <= request.resource.data.budgetLimitInPaise;
+      allow update: if isValidId(orderId);
+      allow delete: if false;
+    }
+  }
+}

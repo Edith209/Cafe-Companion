@@ -1,0 +1,149 @@
+{
+  "entities": {
+    "menuItem": {
+      "title": "MenuItem",
+      "description": "Represents an artisanal beverage or food offering in the Café Companion catalog.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the menu item"
+        },
+        "name": {
+          "type": "string",
+          "description": "Display name of the item",
+          "maxLength": 100
+        },
+        "description": {
+          "type": "string",
+          "description": "Sensory tasting description",
+          "maxLength": 500
+        },
+        "category": {
+          "type": "string",
+          "description": "Menu category",
+          "enum": [
+            "Cold Extraction",
+            "Hot Espresso",
+            "Bakery & Warm Bite",
+            "Artisanal Teas",
+            "Single-Origin Reserve"
+          ]
+        },
+        "priceInPaise": {
+          "type": "integer",
+          "description": "Price in integer paise (₹1 = 100 paise)"
+        },
+        "available": {
+          "type": "boolean",
+          "description": "Availability status of the item"
+        },
+        "dietaryTags": {
+          "type": "array",
+          "description": "Dietary classifications"
+        },
+        "preparationTimeMinutes": {
+          "type": "integer",
+          "description": "Baseline preparation time in minutes"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description",
+        "category",
+        "priceInPaise",
+        "available",
+        "preparationTimeMinutes"
+      ]
+    },
+    "order": {
+      "title": "Order",
+      "description": "Represents a customer order submitted to the Roastery KDS queue.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique order identifier (e.g., CC-1048)"
+        },
+        "customerId": {
+          "type": "string",
+          "description": "Customer identifier"
+        },
+        "items": {
+          "type": "array",
+          "description": "List of ordered items with customizations"
+        },
+        "subtotalInPaise": {
+          "type": "integer",
+          "description": "Item subtotal in integer paise"
+        },
+        "totalInPaise": {
+          "type": "integer",
+          "description": "Total payable in integer paise"
+        },
+        "budgetLimitInPaise": {
+          "type": "integer",
+          "description": "Customer configured budget ceiling in integer paise"
+        },
+        "status": {
+          "type": "string",
+          "description": "Order progression status",
+          "enum": [
+            "draft",
+            "pending",
+            "confirmed",
+            "preparing",
+            "ready",
+            "collected",
+            "cancelled"
+          ]
+        },
+        "fulfilmentMethod": {
+          "type": "string",
+          "description": "Fulfillment option",
+          "enum": [
+            "express_pickup",
+            "dine_in",
+            "counter_collection"
+          ]
+        },
+        "estimatedReadyAt": {
+          "type": "string",
+          "description": "Estimated ready time string or timestamp"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Last updated timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "customerId",
+        "items",
+        "subtotalInPaise",
+        "totalInPaise",
+        "budgetLimitInPaise",
+        "status",
+        "fulfilmentMethod",
+        "estimatedReadyAt",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/menuItems/{itemId}": {
+      "schema": "menuItem",
+      "description": "Public catalog of roastery menu items."
+    },
+    "/orders/{orderId}": {
+      "schema": "order",
+      "description": "Customer orders queue with budget limit enforcement and station routing."
+    }
+  }
+}
